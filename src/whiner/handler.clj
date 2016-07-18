@@ -73,6 +73,10 @@
        (do
          (async/go (throw (Exception. "exception in a go block")))
          "asynced"))
+  (GET "/async-run" []
+       (do
+         (async/go (quot 1 0))
+         "asynced runtime error"))
   (route/not-found "Not Found"))
 
 (defn wrap-catch-exceptions [handler]
