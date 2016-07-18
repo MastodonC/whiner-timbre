@@ -32,7 +32,7 @@ The main changes here are to get a format that we can easily multiline on, as we
 The format is the same as the one used for the (https://github.com/MastodonC/whiner-slf4j) application, which is:
 
 ```
-16-07-18 15:13:52,635 INFO ...
+2016-07-18 15:13:52,635 INFO ...
 ```
 
 Unlike slf4j we cannot really decide to limit the log level of a library, it's blacklisting or white-listing or nothing.
