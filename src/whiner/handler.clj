@@ -10,7 +10,7 @@
 
 (def logback-timestamp-opts
   "Controls (:timestamp_ data)"
-  {:pattern  "yy-MM-dd HH:mm:ss,SSS"
+  {:pattern  "yyyy-MM-dd HH:mm:ss,SSS"
    :locale   :jvm-default
    :timezone :utc})
 
