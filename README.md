@@ -59,6 +59,11 @@ We're also surrounding the main method with a try-catch block to make sure all r
          (catch Throwable t (log/error t)))))
 ```
 
+A last, fairly important point: it's useful to distinguish which cluster/environment is logging data. This can be done by adding data to the docker log-opt in the marathon json.
+
+```
+          {"key": "log-opt", "value": "tag=staging"},
+```
 
 ## License
 
