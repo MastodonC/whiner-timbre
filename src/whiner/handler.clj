@@ -37,7 +37,7 @@
   [opts data]
   (let [stacktrace-str (if-let [pr (:pr-stacktrace opts)]
                          #(with-out-str (pr %))
-                         timbre/stacktrace)]
+                         log/stacktrace)]
   (json/write-str
   {:level (:level data)
    :namespace (:?ns-str data)
