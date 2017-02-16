@@ -6,7 +6,8 @@
             [clojure.core.async :as async]
             [taoensso.timbre :as log]
             [clojure.string :as str]
-            [ring.adapter.jetty :as jetty]))
+            [ring.adapter.jetty :as jetty]
+            [clojure.data.json :as json]))
 
 (def logback-timestamp-opts
   "Controls (:timestamp_ data)"
@@ -22,7 +23,7 @@
   ([opts data] ; For partials
    (let [{:keys [no-stacktrace? stack-fonts]} opts
          {:keys [level ?err #_vargs msg_ ?ns-str hostname_
-                 timestamp_ ?line]} data]
+                 timestamp_ ?line]} data]   
      (str
       (force timestamp_)  " "
       (str/upper-case (name level))  " "
@@ -32,6 +33,18 @@
         (when-let [err ?err]
           (str "\n" (log/stacktrace err opts))))))))
 
+(defn json-output
+  [opts data]
+  (json/write-str
+  {:level (:level data)
+   :namespace (:?ns-str data)
+   :application "whiner-timbre"
+   :file (:?file data)
+   :line (:?line data)
+   :stacktrace (some-> (:?err data) (stacktrace-str))
+   :hostname (force (:hostname_ data))
+   :message (force (:msg_ data))
+   "@timestamp" (:instant data)}))
 
 (def log-config
   "own log config"
@@ -46,7 +59,7 @@
    ;; Clj only:
    :timestamp-opts logback-timestamp-opts ; iso8601 timestamps
 
-   :output-fn (partial output-fn {:stacktrace-fonts {}})
+   :output-fn (partial json-output {:stacktrace-fonts {}})
    })
 
 (defroutes app-routes
