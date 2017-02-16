@@ -5,12 +5,7 @@
     "docker": {
       "image": "mastodonc/whiner-timbre:latest",
       "forcePullImage": true,
-      "parameters": [
-         {"key": "log-driver", "value": "gelf"},
-          {"key": "log-opt", "value": "gelf-address=udp://logstash.sandpit-vpc.kixi:12201"},
-          {"key": "log-opt", "value": "tag=staging"},
-         {"key": "label", "value": "application=whiner-timbre"}
-      ],
+      "parameters": [],
       "network": "BRIDGE",
       "portMappings": [
           {
@@ -21,8 +16,9 @@
       ]
     }
   },
-  "id": "whiner-timbre",
-  "mem": 2048,
+  "id": "whiner-timbre",  
+  "cpus": 0.1,
+  "mem": 256,
   "healthChecks": [{
         "protocol": "HTTP",
         "path": "/",
