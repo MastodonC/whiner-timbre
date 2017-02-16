@@ -7,7 +7,7 @@
             [taoensso.timbre :as log]
             [clojure.string :as str]
             [ring.adapter.jetty :as jetty]
-            [clojure.data.json :as json]))
+            [cheshire.core :as json]))
 
 (def logback-timestamp-opts
   "Controls (:timestamp_ data)"
@@ -33,38 +33,42 @@
         (when-let [err ?err]
           (str "\n" (log/stacktrace err opts))))))))
 
-(defn json-output
+(defn log->json
   [opts data]
   (let [stacktrace-str (if-let [pr (:pr-stacktrace opts)]
                          #(with-out-str (pr %))
                          log/stacktrace)]
-    (json/write-str
-     {:level (:level data)
-      :namespace (:?ns-str data)
-      :application "whiner-timbre"
-      :file (:?file data)
-      :line (:?line data)
-      :stacktrace (some-> (force (:?err data)) (stacktrace-str))
-      :hostname (force (:hostname_ data))
-      :message (force (:msg_ data))
-      "@timestamp" (force (:timestamp_ data))
-      })))
+    {:level (:level data)
+     :namespace (:?ns-str data)
+     :application "whiner-timbre"
+     :file (:?file data)
+     :line (:?line data)
+     :stacktrace (some-> (force (:?err data)) (stacktrace-str))
+     :hostname (force (:hostname_ data))
+     :message (force (:msg_ data))
+     "@timestamp" (force (:timestamp_ data))}))
+
+(defn json->out
+  [data]
+  (json/generate-stream
+   (log->json {:stacktrace-fonts {}} data)
+   *out*))
 
 (def log-config
   "own log config"
-  {:level :info  ; e/o #{:trace :debug :info :warn :error :fatal :report}
+  {:level :info ; e/o #{:trace :debug :info :warn :error :fatal :report}
 
    ;; Control log filtering by namespaces/patterns. Useful for turning off
    ;; logging in noisy libraries, etc.:
    ;;:ns-whitelist  ["whiner.*"] #_["my-app.foo-ns"]
    :ns-blacklist ["org.eclipse.jetty"]
 
-
    ;; Clj only:
    :timestamp-opts logback-timestamp-opts ; iso8601 timestamps
-
-   :output-fn (partial json-output {:stacktrace-fonts {}})
-   })
+   
+   :appenders {:direct-json {:enabled?   true
+                             :async?     false
+                             :fn json->out}}})
 
 (defroutes app-routes
   (GET "/" []
