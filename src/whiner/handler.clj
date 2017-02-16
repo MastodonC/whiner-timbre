@@ -35,6 +35,9 @@
 
 (defn json-output
   [opts data]
+  (let [stacktrace-str (if-let [pr (:pr-stacktrace opts)]
+                         #(with-out-str (pr %))
+                         timbre/stacktrace)]
   (json/write-str
   {:level (:level data)
    :namespace (:?ns-str data)
@@ -44,7 +47,7 @@
    :stacktrace (some-> (:?err data) (stacktrace-str))
    :hostname (force (:hostname_ data))
    :message (force (:msg_ data))
-   "@timestamp" (:instant data)}))
+   "@timestamp" (:instant data)})))
 
 (def log-config
   "own log config"
