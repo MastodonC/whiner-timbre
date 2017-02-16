@@ -38,16 +38,17 @@
   (let [stacktrace-str (if-let [pr (:pr-stacktrace opts)]
                          #(with-out-str (pr %))
                          log/stacktrace)]
-  (json/write-str
-  {:level (:level data)
-   :namespace (:?ns-str data)
-   :application "whiner-timbre"
-   :file (:?file data)
-   :line (:?line data)
-   :stacktrace (some-> (:?err data) (stacktrace-str))
-   :hostname (force (:hostname_ data))
-   :message (force (:msg_ data))
-   "@timestamp" (:instant data)})))
+    (json/write-str
+     {:level (:level data)
+      :namespace (:?ns-str data)
+      :application "whiner-timbre"
+      :file (:?file data)
+      :line (:?line data)
+      :stacktrace (some-> (force (:?err data)) (stacktrace-str))
+      :hostname (force (:hostname_ data))
+      :message (force (:msg_ data))
+      "@timestamp" (force (:timestamp_ data))
+      })))
 
 (def log-config
   "own log config"
