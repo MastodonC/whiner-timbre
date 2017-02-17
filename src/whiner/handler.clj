@@ -33,20 +33,37 @@
         (when-let [err ?err]
           (str "\n" (log/stacktrace err opts))))))))
 
+(defn stacktrace-element->vec
+  [^StackTraceElement ste]
+  [(.getFileName ste) (.getLineNumber ste) (.getMethodName ste)])
+
+(defn exception->map
+  [^Throwable e]
+  (merge
+   {:type (str (type e))
+    :trace (mapv stacktrace-element->vec (.getStackTrace e))}
+   (when-let [m (.getMessage e)]
+     {:message m})
+   (when-let [c (.getCause e)]
+     {:cause (exception->map c)})))
+
+(defn not-empty-str
+  [s]
+  (when (not-empty s) s))
+
 (defn log->json
   [data]
   (let [opts (get-in data [:config :options])
-        stacktrace-str (if-let [pr (:pr-stacktrace opts)]
-                         #(with-out-str (pr %))
-                         log/stacktrace)]
+        exp (some-> (force (:?err data)) exception->map)
+        msg (or (not-empty-str (force (:msg_ data))) (:message exp))]
     {:level (:level data)
      :namespace (:?ns-str data)
      :application "whiner-timbre"
      :file (:?file data)
      :line (:?line data)
-     :stacktrace (some-> (force (:?err data)) (stacktrace-str))
+     :exception exp
      :hostname (force (:hostname_ data))
-     :message (force (:msg_ data))
+     :message msg
      "@timestamp" (force (:timestamp_ data))}))
 
 (defn json->out
