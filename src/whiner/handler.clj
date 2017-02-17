@@ -34,8 +34,9 @@
           (str "\n" (log/stacktrace err opts))))))))
 
 (defn log->json
-  [opts data]
-  (let [stacktrace-str (if-let [pr (:pr-stacktrace opts)]
+  [data]
+  (let [opts (get-in data [:config :options])
+        stacktrace-str (if-let [pr (:pr-stacktrace opts)]
                          #(with-out-str (pr %))
                          log/stacktrace)]
     {:level (:level data)
@@ -51,7 +52,7 @@
 (defn json->out
   [data]
   (json/generate-stream
-   (log->json {:stacktrace-fonts {}} data)
+   (log->json data)
    *out*))
 
 (def log-config
@@ -62,12 +63,16 @@
    ;; logging in noisy libraries, etc.:
    ;;:ns-whitelist  ["whiner.*"] #_["my-app.foo-ns"]
    :ns-blacklist ["org.eclipse.jetty"]
+   :middleware []
 
    ;; Clj only:
    :timestamp-opts logback-timestamp-opts ; iso8601 timestamps
+
+   :options {:stacktrace-fonts {}}
    
    :appenders {:direct-json {:enabled?   true
                              :async?     false
+                             :output-fn identity
                              :fn json->out}}})
 
 (defroutes app-routes
@@ -112,7 +117,7 @@
 (defn -main
   [& args]
   ;; set up log format
-  (log/merge-config! log-config)
+  (log/set-config! log-config)
 
   ;; https://stuartsierra.com/2015/05/27/clojure-uncaught-exceptions
   (Thread/setDefaultUncaughtExceptionHandler
