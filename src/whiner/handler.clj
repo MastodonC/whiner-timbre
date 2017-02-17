@@ -53,7 +53,8 @@
   [data]
   (json/generate-stream
    (log->json data)
-   *out*))
+   *out*)
+  (prn))
 
 (def log-config
   "own log config"
