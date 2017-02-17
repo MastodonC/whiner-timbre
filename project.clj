@@ -1,4 +1,5 @@
 (def slf4j-version "1.7.21")
+(def metrics-version "2.9.0")
 (defproject whiner-timbre "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
@@ -11,6 +12,9 @@
                  [com.taoensso/timbre "4.5.1"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [com.fzakaria/slf4j-timbre "0.3.2"]
+                 [metrics-clojure ~metrics-version]
+                 [metrics-clojure-jvm ~metrics-version]
+                 [metrics-clojure-ring ~metrics-version]
                  [org.slf4j/jul-to-slf4j         ~slf4j-version]
                  [org.slf4j/jcl-over-slf4j       ~slf4j-version]
                  [org.slf4j/log4j-over-slf4j     ~slf4j-version]]

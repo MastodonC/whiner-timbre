@@ -7,7 +7,16 @@
             [taoensso.timbre :as log]
             [clojure.string :as str]
             [ring.adapter.jetty :as jetty]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [metrics
+             [core :refer [new-registry default-registry]]
+             [histograms :refer [histogram update!]]
+             [meters :refer [mark! meter]]]
+            [metrics.jvm.core :as jvm])
+  (:import [com.codahale.metrics ScheduledReporter MetricFilter]
+           [java.util.concurrent TimeUnit]))
+
+(def registry (atom nil))
 
 (def logback-timestamp-opts
   "Controls (:timestamp_ data)"
@@ -132,10 +141,50 @@
   (-> (wrap-defaults app-routes site-defaults)
       (wrap-catch-exceptions)))
 
+(defn gauge->map
+  [[gauge-name gauge]]
+  {:type :gauge
+   :log-type :metric
+   :name gauge-name
+   :value (.getValue gauge)})
+
+(defn attach-custom-reporter
+  [reg]
+  (let [name "Json-console-reporter"
+        poll 5
+        poll-unit TimeUnit/SECONDS
+        filter MetricFilter/ALL
+        rateUnit TimeUnit/SECONDS
+        durationUnit TimeUnit/MILLISECONDS
+        console-json-reporter (proxy [ScheduledReporter] [reg name filter rateUnit durationUnit]
+                                (report
+                                  ([]
+                                   (let [gauges (.getGauges reg filter)
+                                         counters (.getCounters reg filter)
+                                         histos (.getHistograms reg filter)
+                                         meters (.getMeters reg filter)
+                                         timers (.getTimers reg filter)]
+                                     (json/generate-stream
+                                      (gauge->map (second gauges))
+                                      *out*)
+                                     (prn))) 
+                                  ([gauges counters histograms meters timers]
+                                   (prn "REPORTING"))))]
+    (.start console-json-reporter
+            poll poll-unit)))
+
+(defn configure-metrics
+  []
+  (let [reg default-registry]
+    (attach-custom-reporter reg)
+    (jvm/instrument-jvm reg)))
+
 (defn -main
   [& args]
   ;; set up log format
   (log/set-config! log-config)
+
+  (configure-metrics)
 
   ;; https://stuartsierra.com/2015/05/27/clojure-uncaught-exceptions
   (Thread/setDefaultUncaughtExceptionHandler
