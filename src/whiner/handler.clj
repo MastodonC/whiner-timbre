@@ -80,7 +80,7 @@
      :line (:?line data)
      :exception exp
      :hostname (force (:hostname_ data))
-     :message msg
+     :msg msg
      "@timestamp" (force (:timestamp_ data))}))
 
 (defn json->out
