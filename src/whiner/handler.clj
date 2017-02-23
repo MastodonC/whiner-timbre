@@ -108,6 +108,13 @@
   (GET "/info" []
        (log/info "informative message")
        "Info")
+  (GET "/info-map" []
+       (log/info {:key "This is a map"})
+       "Info Map")
+  (GET "/event" []
+       (log/info {:logtype "event"
+                  :key "This is a map"})
+       "Info Event")
   (GET "/warn" []
        (log/warn "warning")
        "Warning")
