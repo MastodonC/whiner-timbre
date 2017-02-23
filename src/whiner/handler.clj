@@ -167,9 +167,7 @@
                                      (json/generate-stream
                                       (gauge->map (second gauges))
                                       *out*)
-                                     (prn))) 
-                                  ([gauges counters histograms meters timers]
-                                   (prn "REPORTING"))))]
+                                     (prn)))))]
     (.start console-json-reporter
             poll poll-unit)))
 
