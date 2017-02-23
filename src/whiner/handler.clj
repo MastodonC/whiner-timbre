@@ -60,11 +60,19 @@
   [s]
   (when (not-empty s) s))
 
+(defn extract-msg
+  [data]
+  (let [f (first (:vargs data))]
+    (if (and (map? f)
+             (= 1 (count (:vargs data))))
+      f
+      (not-empty-str (force (:msg_ data))))))
+
 (defn log->json
   [data]
   (let [opts (get-in data [:config :options])
         exp (some-> (force (:?err data)) exception->map)
-        msg (or (not-empty-str (force (:msg_ data))) (:message exp))]
+        msg (or (extract-msg data) (:message exp))]
     {:level (:level data)
      :namespace (:?ns-str data)
      :application "whiner-timbre"
@@ -109,7 +117,7 @@
        (log/info "informative message")
        "Info")
   (GET "/info-map" []
-       (log/info {:key "This is a map"})
+       (log/info {:key "informative message"})
        "Info Map")
   (GET "/event" []
        (log/info {:logtype "event"
