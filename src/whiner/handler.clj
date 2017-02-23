@@ -120,7 +120,7 @@
        (log/info {:key "informative message"})
        "Info Map")
   (GET "/event" []
-       (log/info {:logtype "event"
+       (log/info {:kixi.comms.message/type "event"
                   :key "This is a map"})
        "Info Event")
   (GET "/warn" []
