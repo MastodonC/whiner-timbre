@@ -82,7 +82,7 @@
   []
   (let [reg default-registry
         reporter (reporter/reporter reg {})]    
-    (reporter/start reporter (:seconds 5))
+    (reporter/start reporter {:seconds 5})
     (jvm/instrument-jvm reg)))
 
 (defn -main
