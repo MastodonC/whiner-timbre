@@ -12,6 +12,8 @@
                  [com.taoensso/timbre "4.5.1"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [com.fzakaria/slf4j-timbre "0.3.2"]
+                 [kixi/kixi.log "0.1.3"]
+                 [kixi/kixi.metrics "0.4.0"]
                  [metrics-clojure ~metrics-version]
                  [metrics-clojure-jvm ~metrics-version]
                  [metrics-clojure-ring ~metrics-version]
