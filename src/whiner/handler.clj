@@ -25,7 +25,7 @@
                   (fn [e]
                     (let [current (c e)]
                       (-> current
-                          (dissoc :trace)
+                          (update :trace (partial apply str))
                           (dissoc :cause))))))
 
 
