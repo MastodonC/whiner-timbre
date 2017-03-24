@@ -9,6 +9,7 @@
             [ring.adapter.jetty :as jetty]
             [cheshire.core :as json]
             [kixi.log :as kixi-log]
+            [kixi.log.timbre.appenders.logstash :as logstash]
             [kixi.metrics.reporters.json-console :as reporter]
             [metrics
              [core :refer [new-registry default-registry]]
@@ -17,6 +18,17 @@
             [metrics.jvm.core :as jvm])
   (:import [com.codahale.metrics ScheduledReporter MetricFilter]
            [java.util.concurrent TimeUnit]))
+
+
+(alter-var-root #'logstash/exception->map
+                (fn [c]
+                  (fn [e]
+                    (let [current (c e)]
+                      (-> current
+                          (update :trace first)
+                          (dissoc :cause))))))
+
+
 
 (def registry (atom nil))
 
