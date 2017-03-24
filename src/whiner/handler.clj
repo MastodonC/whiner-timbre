@@ -25,7 +25,7 @@
                   (fn [e]
                     (let [current (c e)]
                       (-> current
-                          (update :trace first)
+                          (dissoc :trace)
                           (dissoc :cause))))))
 
 
