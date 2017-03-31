@@ -3,7 +3,7 @@
     "container": {
         "type": "DOCKER",
         "docker": {
-            "image": "OVERRIDEN_BY_JENKINS",
+            "image": "OVERRIDDEN_BY_JENKINS",
             "forcePullImage": true,
             "parameters": [],
             "network": "BRIDGE",
@@ -16,7 +16,7 @@
             ]
         }
     },
-    "id": "OVERRIDEN_BY_JENKINS",
+    "id": "OVERRIDDEN_BY_JENKINS",
     "cpus": 0.1,
     "mem": 512,
     "healthChecks": [{
