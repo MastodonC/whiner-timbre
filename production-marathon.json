@@ -1,0 +1,31 @@
+{
+    "acceptedResourceRoles": ["slave_public"],
+    "container": {
+        "type": "DOCKER",
+        "docker": {
+            "image": "OVERRIDEN_BY_JENKINS",
+            "forcePullImage": true,
+            "parameters": [],
+            "network": "BRIDGE",
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3999,
+                    "protocol": "tcp"
+                }
+            ]
+        }
+    },
+    "id": "OVERRIDEN_BY_JENKINS",
+    "cpus": 0.1,
+    "mem": 512,
+    "healthChecks": [{
+        "protocol": "HTTP",
+        "path": "/",
+        "gracePeriodSeconds": 600,
+        "intervalSeconds": 30,
+        "portIndex": 0,
+        "timeoutSeconds": 10,
+        "maxConsecutiveFailures": 3
+    }]
+}
